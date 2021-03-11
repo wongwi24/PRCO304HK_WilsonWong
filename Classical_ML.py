@@ -3,7 +3,7 @@
 
 # ## Import Libraries
 
-# In[1]:
+# In[4]:
 
 
 import numpy as np
@@ -14,29 +14,29 @@ import seaborn as sb
 
 # ## Import and Analysis of data
 
-# In[2]:
+# In[15]:
 
 
 card_data = pd.read_csv('creditcard.csv\creditcard.csv')
 print(card_data.shape)
-x = card_data.iloc[:, :-1]
-y = card_data.iloc[:, -1]
+X = card_data.iloc[:, :-1]
+Y = card_data.iloc[:, -1]
 
 
-# In[3]:
+# In[6]:
 
 
 card_data.describe()
 
 
-# In[4]:
+# In[7]:
 
 
 # Check if there is null values
 card_data.isnull().sum()
 
 
-# In[5]:
+# In[8]:
 
 
 #Plot Fraud vs Not Fraud transaction counts
@@ -48,7 +48,7 @@ plt.xticks([0,1], labels=["not fraud","fraud"])
 plt.show()
 
 
-# In[6]:
+# In[9]:
 
 
 #Plot features correlation
@@ -59,7 +59,7 @@ sb.heatmap(corr, xticklabels=corr.columns, yticklabels=corr.columns)
 plt.show
 
 
-# In[51]:
+# In[10]:
 
 
 #Transaction Time density plot
@@ -72,14 +72,14 @@ plt.legend()
 plt.show()
 
 
-# In[47]:
+# In[11]:
 
 
 sb.boxplot(x = "Class", y = "Amount", hue = "Class", data = card_data, showfliers = False)
 plt.show()
 
 
-# In[66]:
+# In[12]:
 
 
 #Features density plot
@@ -98,6 +98,45 @@ for feature in col:
     plt.xlabel(feature, fontsize=10)
     plt.legend()
 plt.show()
+
+
+# ## Data Preprocessing
+
+# In[39]:
+
+
+#Split dataset into test train and valid
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
+
+x_train_v, x_test, y_train_v, y_test = train_test_split(X, Y, stratify = Y, test_size = 0.25, random_state = 5)
+x_train, x_valid, y_train, y_valid = train_test_split(x_train_v, y_train_v, stratify = y_train_v, test_size = 0.25, random_state = 5)
+
+
+# In[49]:
+
+
+sc = StandardScaler()
+x_train = sc.fit_transform(x_train)
+x_test = sc.fit_transform(x_test)
+x_valid = sc.fit_transform(x_valid)
+
+
+# In[50]:
+
+
+weight_nf = y_train.value_counts()[0] / len(y_train)
+weight_f = y_train.value_counts()[1] / len(y_train)
+print(f"Non-Fraud weight: {weight_nf}")
+print(f"Fraud weight: {weight_f}")
+
+
+# In[70]:
+
+
+print(f"Train Data shape: {x_train.shape} Train Class Data shape: {y_train.shape}")
+print(f"Test Data shape: {x_test.shape} Test Class Data shape: {y_test.shape}")
+print(f"Valid Data shape: {x_valid.shape} Valid Class Data shape: {y_valid.shape}")
 
 
 # In[ ]:
