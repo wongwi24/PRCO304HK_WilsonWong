@@ -3,7 +3,7 @@
 
 # ## Import Libraries
 
-# In[1]:
+# In[106]:
 
 
 import numpy as np
@@ -14,7 +14,7 @@ import seaborn as sb
 
 # ## Import and Analysis of data
 
-# In[2]:
+# In[107]:
 
 
 card_data = pd.read_csv('creditcard.csv\creditcard.csv')
@@ -23,20 +23,20 @@ X = card_data.iloc[:, :-1]
 Y = card_data.iloc[:, -1]
 
 
-# In[3]:
+# In[108]:
 
 
 card_data.describe()
 
 
-# In[4]:
+# In[109]:
 
 
 # Check if there is null values
 card_data.isnull().sum()
 
 
-# In[5]:
+# In[110]:
 
 
 #Plot Fraud vs Not Fraud transaction counts
@@ -48,7 +48,7 @@ plt.xticks([0,1], labels=["not fraud","fraud"])
 plt.show()
 
 
-# In[6]:
+# In[111]:
 
 
 #Plot features correlation
@@ -59,7 +59,7 @@ sb.heatmap(corr, xticklabels=corr.columns, yticklabels=corr.columns)
 plt.show
 
 
-# In[7]:
+# In[112]:
 
 
 #Transaction Time density plot
@@ -72,14 +72,14 @@ plt.legend()
 plt.show()
 
 
-# In[8]:
+# In[113]:
 
 
 sb.boxplot(x = "Class", y = "Amount", hue = "Class", data = card_data, showfliers = False)
 plt.show()
 
 
-# In[9]:
+# In[114]:
 
 
 #Features density plot
@@ -102,7 +102,7 @@ plt.show()
 
 # ## Data Preprocessing
 
-# In[10]:
+# In[115]:
 
 
 #Split dataset into test train and valid
@@ -113,7 +113,7 @@ x_train_v, x_test, y_train_v, y_test = train_test_split(X, Y, stratify = Y, test
 x_train, x_valid, y_train, y_valid = train_test_split(x_train_v, y_train_v, stratify = y_train_v, test_size = 0.25, random_state = 5)
 
 
-# In[11]:
+# In[116]:
 
 
 sc = StandardScaler()
@@ -122,7 +122,7 @@ x_test = sc.fit_transform(x_test)
 x_valid = sc.fit_transform(x_valid)
 
 
-# In[12]:
+# In[117]:
 
 
 weight_nf = y_train.value_counts()[0] / len(y_train)
@@ -131,7 +131,7 @@ print(f"Non-Fraud weight: {weight_nf}")
 print(f"Fraud weight: {weight_f}")
 
 
-# In[13]:
+# In[118]:
 
 
 print(f"Train Data shape: {x_train.shape} Train Class Data shape: {y_train.shape}")
@@ -139,9 +139,21 @@ print(f"Test Data shape: {x_test.shape} Test Class Data shape: {y_test.shape}")
 print(f"Valid Data shape: {x_valid.shape} Valid Class Data shape: {y_valid.shape}")
 
 
+# In[119]:
+
+
+from sklearn.decomposition import PCA 
+pca = PCA(n_components = 27)
+x_train = pca.fit_transform(x_train)
+x_test = pca.transform(x_test)
+x_valid = pca.transform(x_valid)
+var_explained = pca.explained_variance_ratio_.sum()
+print(var_explained)
+
+
 # ## Random Forest Classifier
 
-# In[14]:
+# In[120]:
 
 
 from sklearn.ensemble import RandomForestClassifier
@@ -150,7 +162,7 @@ randfclassifier.fit(x_train, y_train)
 y_valid_pred_randf = randfclassifier.predict(x_valid)
 
 
-# In[15]:
+# In[121]:
 
 
 from sklearn.metrics import accuracy_score, confusion_matrix, classification_report, f1_score, roc_auc_score
@@ -160,13 +172,13 @@ def print_classification_result(true, predict):
     print(f"ROC_AUC_Score:{roc_auc_score(true, predict)}")
 
 
-# In[16]:
+# In[122]:
 
 
 print_classification_result(y_valid, y_valid_pred_randf)
 
 
-# In[17]:
+# In[123]:
 
 
 #Change number of trees in forest to 200
@@ -176,7 +188,7 @@ y_valid_pred_randf = randfclassifier2.predict(x_valid)
 print_classification_result(y_valid, y_valid_pred_randf)
 
 
-# In[18]:
+# In[124]:
 
 
 y_test_pred_randf = randfclassifier2.predict(x_test)
@@ -185,7 +197,7 @@ print_classification_result(y_test, y_test_pred_randf)
 
 # ## Kernel Support Vector Machine
 
-# In[19]:
+# In[125]:
 
 
 from sklearn.svm import SVC
@@ -197,7 +209,7 @@ print_classification_result(y_test, y_test_pred_KSVM)
 
 # ## K Nearest Neighbors
 
-# In[20]:
+# In[126]:
 
 
 from sklearn.neighbors import KNeighborsClassifier
@@ -207,7 +219,7 @@ y_valid_pred_KNN = knn.predict(x_valid)
 print_classification_result(y_valid, y_valid_pred_KNN)
 
 
-# In[21]:
+# In[127]:
 
 
 #Change number of neighbors to 5
@@ -217,7 +229,7 @@ y_valid_pred_KNN = knn2.predict(x_valid)
 print_classification_result(y_valid, y_valid_pred_KNN)
 
 
-# In[22]:
+# In[128]:
 
 
 y_test_pred_KNN = knn2.predict(x_test)
@@ -226,7 +238,7 @@ print_classification_result(y_test, y_test_pred_KNN)
 
 # ## Naive Bayes Classifier
 
-# In[23]:
+# In[129]:
 
 
 from sklearn.naive_bayes import GaussianNB
@@ -234,6 +246,18 @@ nb = GaussianNB()
 nb.fit(x_train, y_train)
 y_test_pred_NB = nb.predict(x_test)
 print_classification_result(y_test, y_test_pred_NB)
+
+
+# ## Decision Tree Classifier
+
+# In[132]:
+
+
+from sklearn.tree import DecisionTreeClassifier
+tree = DecisionTreeClassifier(criterion = "entropy")
+tree.fit(x_train, y_train)
+y_test_pred_tree = tree.predict(x_test)
+print_classification_result(y_test, y_test_pred_tree)
 
 
 # In[ ]:
