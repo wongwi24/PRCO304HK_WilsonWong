@@ -342,7 +342,7 @@ def print_classification_result(true, predict):
 
 # ## Random Forest Classifier
 
-# In[27]:
+# In[ ]:
 
 
 from sklearn.ensemble import RandomForestClassifier
@@ -352,18 +352,19 @@ y_test_pred_randf = randfclassifier.predict(x_test)
 print_classification_result(y_test, y_test_pred_randf)
 
 
-# In[28]:
+# In[ ]:
 
 
 from sklearn.metrics import plot_confusion_matrix
-plt.figure(figsize = (12,8))
-disp = plot_confusion_matrix(randfclassifier, x_test, y_test, display_labels=[0,1], cmap=plt.cm.Blues, values_format='d')
+plt.figure(figsize = (7,5))
+cm = sb.heatmap(confusion_matrix(y_test, y_test_pred_randf), annot=True, cmap='Blues', fmt='d')
+cm.set_title('Random Forest')
 plt.show()
 
 
 # ## K Nearest Neighbor Classifier
 
-# In[29]:
+# In[ ]:
 
 
 from sklearn.neighbors import KNeighborsClassifier
@@ -374,18 +375,19 @@ y_test_pred_KNN = knn.predict(x_test)
 print_classification_result(y_test, y_test_pred_KNN)
 
 
-# In[30]:
+# In[ ]:
 
 
 from sklearn.metrics import plot_confusion_matrix
-plt.figure(figsize = (12,8))
-disp = plot_confusion_matrix(knn, x_test, y_test, display_labels=[0,1], cmap=plt.cm.Blues, values_format='d')
+plt.figure(figsize = (7,5))
+cm = sb.heatmap(confusion_matrix(y_test, y_test_pred_KNN), annot=True, cmap='Blues', fmt='d')
+cm.set_title('K Nearest Neighbors')
 plt.show()
 
 
 # ## Naive Bayes Classifier
 
-# In[31]:
+# In[ ]:
 
 
 from sklearn.naive_bayes import GaussianNB
@@ -395,18 +397,19 @@ y_test_pred_NB = nb.predict(x_test)
 print_classification_result(y_test, y_test_pred_NB)
 
 
-# In[32]:
+# In[ ]:
 
 
 from sklearn.metrics import plot_confusion_matrix
-plt.figure(figsize = (12,8))
-disp = plot_confusion_matrix(nb, x_test, y_test, display_labels=[0,1], cmap=plt.cm.Blues, values_format='d')
+plt.figure(figsize = (7,5))
+cm = sb.heatmap(confusion_matrix(y_test, y_test_pred_NB), annot=True, cmap='Blues', fmt='d')
+cm.set_title('Naive Bayes')
 plt.show()
 
 
 # ## Decision Tree Classifier
 
-# In[33]:
+# In[ ]:
 
 
 from sklearn.tree import DecisionTreeClassifier
@@ -416,11 +419,12 @@ y_test_pred_tree = tree.predict(x_test)
 print_classification_result(y_test, y_test_pred_tree)
 
 
-# In[34]:
+# In[ ]:
 
 
 from sklearn.metrics import plot_confusion_matrix
-plt.figure(figsize = (12,8))
-disp = plot_confusion_matrix(tree, x_test, y_test, display_labels=[0,1], cmap=plt.cm.Blues, values_format='d')
+plt.figure(figsize = (7,5))
+cm = sb.heatmap(confusion_matrix(y_test, y_test_pred_tree), annot=True, cmap='Blues', fmt='d')
+cm.set_title('Decision Tree')
 plt.show()
 
