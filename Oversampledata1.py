@@ -3,7 +3,7 @@
 
 # ## Import Libraries
 
-# In[15]:
+# In[1]:
 
 
 import numpy as np
@@ -16,7 +16,7 @@ from imblearn.over_sampling import SMOTE
 
 # ## Import and Analysis of data
 
-# In[16]:
+# In[2]:
 
 
 card_data = pd.read_csv('creditcard.csv\creditcard.csv')
@@ -25,20 +25,20 @@ X = card_data.iloc[:, :-1]
 Y = card_data.iloc[:, -1]
 
 
-# In[17]:
+# In[3]:
 
 
 card_data.describe()
 
 
-# In[18]:
+# In[4]:
 
 
 # Check if there is null values
 card_data.isnull().sum()
 
 
-# In[19]:
+# In[5]:
 
 
 #Plot Fraud vs Not Fraud transaction counts
@@ -50,7 +50,7 @@ plt.xticks([0,1], labels=["not fraud","fraud"])
 plt.show()
 
 
-# In[20]:
+# In[6]:
 
 
 #Plot features correlation
@@ -61,7 +61,7 @@ sb.heatmap(corr, xticklabels=corr.columns, yticklabels=corr.columns)
 plt.show
 
 
-# In[21]:
+# In[7]:
 
 
 #Transaction Time density plot
@@ -74,14 +74,14 @@ plt.legend()
 plt.show()
 
 
-# In[22]:
+# In[8]:
 
 
 sb.boxplot(x = "Class", y = "Amount", hue = "Class", data = card_data, showfliers = False)
 plt.show()
 
 
-# In[23]:
+# In[9]:
 
 
 #Features density plot
@@ -104,7 +104,7 @@ plt.show()
 
 # ## Data Preprocessing
 
-# In[24]:
+# In[3]:
 
 
 #Split dataset into test train and valid
@@ -114,7 +114,7 @@ from sklearn.preprocessing import StandardScaler
 x_train, x_test, y_train, y_test = train_test_split(X, Y, stratify = Y, test_size = 0.25, random_state = 5)
 
 
-# In[25]:
+# In[4]:
 
 
 ct = ColumnTransformer([
@@ -124,14 +124,14 @@ x_train = ct.fit_transform(x_train)
 x_test = ct.transform(x_test)
 
 
-# In[26]:
+# In[5]:
 
 
 smote = SMOTE(sampling_strategy='minority')
 x_train, y_train = smote.fit_resample(x_train, y_train)
 
 
-# In[27]:
+# In[6]:
 
 
 weight_nf = y_train.value_counts()[0] / len(y_train)
@@ -140,7 +140,7 @@ print(f"Non-Fraud weight: {weight_nf}")
 print(f"Fraud weight: {weight_f}")
 
 
-# In[28]:
+# In[7]:
 
 
 print(f"Train Data shape: {x_train.shape} Train Class Data shape: {y_train.shape}")
@@ -149,7 +149,7 @@ print(f"Test Data shape: {x_test.shape} Test Class Data shape: {y_test.shape}")
 
 # ## Random Forest Classifier
 
-# In[29]:
+# In[9]:
 
 
 from sklearn.metrics import accuracy_score, confusion_matrix, recall_score, f1_score, precision_score, matthews_corrcoef
@@ -164,7 +164,7 @@ def print_classification_result(true, predict):
     print(f"Precision_Score\n:{precision_score(true, predict)}")
 
 
-# In[30]:
+# In[16]:
 
 
 from sklearn.ensemble import RandomForestClassifier
@@ -174,10 +174,9 @@ y_test_pred_randf = randfclassifier.predict(x_test)
 print_classification_result(y_test, y_test_pred_randf)
 
 
-# In[31]:
+# In[17]:
 
 
-from sklearn.metrics import plot_confusion_matrix
 plt.figure(figsize = (7,5))
 cm = sb.heatmap(confusion_matrix(y_test, y_test_pred_randf), annot=True, cmap='Blues', fmt='d')
 cm.set_title('Random Forest')
@@ -186,7 +185,7 @@ plt.show()
 
 # ## Kernel Support Vector Machine
 
-# In[ ]:
+# In[18]:
 
 
 from sklearn.svm import SVC
@@ -196,10 +195,9 @@ y_test_pred_KSVM = KSVM.predict(x_test)
 print_classification_result(y_test, y_test_pred_KSVM)
 
 
-# In[ ]:
+# In[19]:
 
 
-from sklearn.metrics import plot_confusion_matrix
 plt.figure(figsize = (7,5))
 cm = sb.heatmap(confusion_matrix(y_test, y_test_pred_KSVM), annot=True, cmap='Blues', fmt='d')
 cm.set_title('Support Vector Machine')
@@ -208,7 +206,7 @@ plt.show()
 
 # ## K Nearest Neighbors
 
-# In[ ]:
+# In[20]:
 
 
 from sklearn.neighbors import KNeighborsClassifier
@@ -218,10 +216,9 @@ y_test_pred_KNN = knn.predict(x_test)
 print_classification_result(y_test, y_test_pred_KNN)
 
 
-# In[ ]:
+# In[21]:
 
 
-from sklearn.metrics import plot_confusion_matrix
 plt.figure(figsize = (7,5))
 cm = sb.heatmap(confusion_matrix(y_test, y_test_pred_KNN), annot=True, cmap='Blues', fmt='d')
 cm.set_title('K Nearest Neighbors')
@@ -230,7 +227,7 @@ plt.show()
 
 # ## Naive Bayes Classifier
 
-# In[ ]:
+# In[22]:
 
 
 from sklearn.naive_bayes import GaussianNB
@@ -240,10 +237,9 @@ y_test_pred_NB = nb.predict(x_test)
 print_classification_result(y_test, y_test_pred_NB)
 
 
-# In[ ]:
+# In[23]:
 
 
-from sklearn.metrics import plot_confusion_matrix
 plt.figure(figsize = (7,5))
 cm = sb.heatmap(confusion_matrix(y_test, y_test_pred_NB), annot=True, cmap='Blues', fmt='d')
 cm.set_title('Naive Bayes')
@@ -252,7 +248,7 @@ plt.show()
 
 # ## Decision Tree Classifier
 
-# In[ ]:
+# In[24]:
 
 
 from sklearn.tree import DecisionTreeClassifier
@@ -262,12 +258,148 @@ y_test_pred_tree = tree.predict(x_test)
 print_classification_result(y_test, y_test_pred_tree)
 
 
-# In[ ]:
+# In[25]:
 
 
-from sklearn.metrics import plot_confusion_matrix
 plt.figure(figsize = (7,5))
 cm = sb.heatmap(confusion_matrix(y_test, y_test_pred_tree), annot=True, cmap='Blues', fmt='d')
 cm.set_title('Decision Tree')
 plt.show()
+
+
+# ## Logistics Regression
+
+# In[10]:
+
+
+from sklearn.linear_model import LogisticRegression
+log = LogisticRegression(C=1, class_weight="dict")
+log.fit(x_train, y_train)
+y_test_pred_log = log.predict(x_test)
+print_classification_result(y_test, y_test_pred_log)
+
+
+# In[11]:
+
+
+plt.figure(figsize = (7,5))
+cm = sb.heatmap(confusion_matrix(y_test, y_test_pred_log), annot=True, cmap='Blues', fmt='d')
+cm.set_title('Logistic Regression')
+plt.show()
+
+
+# ## Artificial Neural Network
+
+# In[22]:
+
+
+import tensorflow as tf
+ann = tf.keras.models.Sequential()
+ann.add(tf.keras.layers.Dense(units = 228, activation = "relu"))
+ann.add(tf.keras.layers.Dropout(0.2))
+ann.add(tf.keras.layers.Dense(units = 114, activation = "relu"))
+ann.add(tf.keras.layers.Dropout(0.2))
+ann.add(tf.keras.layers.Dense(units = 1, activation = "sigmoid"))
+ann.compile(optimizer = 'adam', loss = 'binary_crossentropy', metrics = ['accuracy'])
+
+
+# In[23]:
+
+
+loss = ann.fit(x_train, y_train, batch_size = 32, epochs = 20, validation_split = 0.3)
+
+
+# In[24]:
+
+
+plt.plot(loss.history['loss'])
+plt.plot(loss.history['val_loss'])
+plt.title('model loss')
+plt.ylabel('loss')
+plt.xlabel('epoch')
+plt.legend(['train', 'test'], loc='upper left')
+plt.show()
+
+
+# In[25]:
+
+
+y_pred = ann.predict(x_test)
+y_pred = np.round(y_pred)
+print_classification_result(y_test, y_pred)
+
+
+# In[26]:
+
+
+from sklearn.metrics import plot_confusion_matrix
+plt.figure(figsize = (7,5))
+cm = sb.heatmap(confusion_matrix(y_test, y_pred), annot=True, cmap='Blues', fmt='d')
+cm.set_title('Artificial Neural Network')
+plt.show()
+
+
+# ## Convolutional Neural Network
+
+# In[27]:
+
+
+x_train = np.array(x_train).reshape(x_train.shape[0], x_train.shape[1], 1)
+x_test = np.array(x_test).reshape(x_test.shape[0], x_test.shape[1], 1)
+
+
+# In[28]:
+
+
+cnn = tf.keras.models.Sequential()
+cnn.add(tf.keras.layers.Conv1D(filters = 64, kernel_size = 3, activation = 'relu', input_shape = [x_train.shape[1], 1]))
+cnn.add(tf.keras.layers.MaxPool1D(pool_size = 2, strides = 1))
+cnn.add(tf.keras.layers.Conv1D(filters = 64, kernel_size = 2, activation = 'relu'))
+cnn.add(tf.keras.layers.MaxPool1D(pool_size = 2, strides = 1))
+cnn.add(tf.keras.layers.Flatten())
+cnn.add(tf.keras.layers.Dense(units = 128, activation = 'relu'))
+cnn.add(tf.keras.layers.Dense(units = 1, activation = 'sigmoid'))
+cnn.compile(optimizer = 'adam', loss = 'binary_crossentropy', metrics = ['accuracy'])
+
+
+# In[29]:
+
+
+loss = cnn.fit(x_train, y_train, batch_size = 32, epochs = 20, verbose = 1, validation_split = 0.3)
+
+
+# In[30]:
+
+
+plt.plot(loss.history['loss'])
+plt.plot(loss.history['val_loss'])
+plt.title('model loss')
+plt.ylabel('loss')
+plt.xlabel('epoch')
+plt.legend(['train', 'test'], loc='upper left')
+plt.show()
+
+
+# In[31]:
+
+
+y_pred = cnn.predict(x_test)
+y_pred = np.round(y_pred)
+print_classification_result(y_test, y_pred)
+
+
+# In[32]:
+
+
+from sklearn.metrics import plot_confusion_matrix
+plt.figure(figsize = (7,5))
+cm = sb.heatmap(confusion_matrix(y_test, y_pred), annot=True, cmap='Blues', fmt='d')
+cm.set_title('Convolutional Neural Network')
+plt.show()
+
+
+# In[ ]:
+
+
+
 
