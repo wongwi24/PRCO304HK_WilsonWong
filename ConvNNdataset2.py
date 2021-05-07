@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[155]:
+# In[1]:
 
 
 import numpy as np
@@ -20,14 +20,14 @@ train_id = pd.read_csv('creditcard_dataset2.csv/train_identity.csv')
 train_trans = pd.read_csv('creditcard_dataset2.csv/train_transaction.csv')
 
 
-# In[156]:
+# In[2]:
 
 
 print(train_id.shape)
 print(train_trans.shape)
 
 
-# In[157]:
+# In[3]:
 
 
 #Merge Transaction and Identity table
@@ -36,14 +36,14 @@ train = train_trans.merge(train_id, how='left', on='TransactionID')
 train.isnull().sum()
 
 
-# In[158]:
+# In[4]:
 
 
 del train_id
 del train_trans
 
 
-# In[159]:
+# In[5]:
 
 
 #Remove high missing value columns
@@ -54,13 +54,13 @@ for col in train.columns:
         columnsToDelete.append(col)
 
 
-# In[160]:
+# In[6]:
 
 
 train = train.drop(columns=columnsToDelete)
 
 
-# In[161]:
+# In[7]:
 
 
 v_columns = []
@@ -69,7 +69,7 @@ for col in ['V'+str(x) for x in range(1,340)]:
         v_columns.append(col)
 
 
-# In[162]:
+# In[8]:
 
 
 cat_label_features = ["card1","card2","card3","card5", "addr1", "addr2", "id_13","id_17","id_19","id_20","id_31","DeviceInfo"]
@@ -88,7 +88,7 @@ print(len(cat_label_features))
 print(len(num_features))
 
 
-# In[163]:
+# In[9]:
 
 
 emails = {'gmail': 'google', 'att.net': 'att', 'twc.com': 'spectrum', 'scranton.edu': 'other', 'optonline.net': 'other',
@@ -111,53 +111,53 @@ for c in ['P_emaildomain', 'R_emaildomain']:
     train[c] = train[c].map(emails)
 
 
-# In[164]:
+# In[10]:
 
 
-train["latest_browser"] = np.zeros(train.shape[0])
+train["new_browser"] = np.zeros(train.shape[0])
 
-def setBrowser(df):
-    df.loc[df["id_31"]=="samsung browser 7.0",'latest_browser']=1
-    df.loc[df["id_31"]=="opera 53.0",'latest_browser']=1
-    df.loc[df["id_31"]=="mobile safari 10.0",'latest_browser']=1
-    df.loc[df["id_31"]=="google search application 49.0",'latest_browser']=1
-    df.loc[df["id_31"]=="firefox 60.0",'latest_browser']=1
-    df.loc[df["id_31"]=="edge 17.0",'latest_browser']=1
-    df.loc[df["id_31"]=="chrome 69.0",'latest_browser']=1
-    df.loc[df["id_31"]=="chrome 67.0 for android",'latest_browser']=1
-    df.loc[df["id_31"]=="chrome 63.0 for android",'latest_browser']=1
-    df.loc[df["id_31"]=="chrome 63.0 for ios",'latest_browser']=1
-    df.loc[df["id_31"]=="chrome 64.0",'latest_browser']=1
-    df.loc[df["id_31"]=="chrome 64.0 for android",'latest_browser']=1
-    df.loc[df["id_31"]=="chrome 64.0 for ios",'latest_browser']=1
-    df.loc[df["id_31"]=="chrome 65.0",'latest_browser']=1
-    df.loc[df["id_31"]=="chrome 65.0 for android",'latest_browser']=1
-    df.loc[df["id_31"]=="chrome 65.0 for ios",'latest_browser']=1
-    df.loc[df["id_31"]=="chrome 66.0",'latest_browser']=1
-    df.loc[df["id_31"]=="chrome 66.0 for android",'latest_browser']=1
-    df.loc[df["id_31"]=="chrome 66.0 for ios",'latest_browser']=1
+def setBinaryBrowser(df):
+    df.loc[df["id_31"]=="samsung browser 7.0",'new_browser']=1
+    df.loc[df["id_31"]=="opera 53.0",'new_browser']=1
+    df.loc[df["id_31"]=="mobile safari 10.0",'new_browser']=1
+    df.loc[df["id_31"]=="google search application 49.0",'new_browser']=1
+    df.loc[df["id_31"]=="firefox 60.0",'new_browser']=1
+    df.loc[df["id_31"]=="edge 17.0",'new_browser']=1
+    df.loc[df["id_31"]=="chrome 69.0",'new_browser']=1
+    df.loc[df["id_31"]=="chrome 67.0 for android",'new_browser']=1
+    df.loc[df["id_31"]=="chrome 63.0 for android",'new_browser']=1
+    df.loc[df["id_31"]=="chrome 63.0 for ios",'new_browser']=1
+    df.loc[df["id_31"]=="chrome 64.0",'new_browser']=1
+    df.loc[df["id_31"]=="chrome 64.0 for android",'new_browser']=1
+    df.loc[df["id_31"]=="chrome 64.0 for ios",'new_browser']=1
+    df.loc[df["id_31"]=="chrome 65.0",'new_browser']=1
+    df.loc[df["id_31"]=="chrome 65.0 for android",'new_browser']=1
+    df.loc[df["id_31"]=="chrome 65.0 for ios",'new_browser']=1
+    df.loc[df["id_31"]=="chrome 66.0",'new_browser']=1
+    df.loc[df["id_31"]=="chrome 66.0 for android",'new_browser']=1
+    df.loc[df["id_31"]=="chrome 66.0 for ios",'new_browser']=1
     return df
 
-train = setBrowser(train)
+train = setBinaryBrowser(train)
 cat_label_features.remove('id_31')
-cat_onehot_features.append('latest_browser')
-train.drop(columns='id_31')
+cat_onehot_features.append('new_browser')
+train = train.drop(columns='id_31')
 
 
-# In[165]:
+# In[11]:
 
 
-def make_hour_feature(df, tname='TransactionDT'):
-    hours = df[tname] / (3600)        
-    encoded_hours = np.floor(hours) % 24
-    return encoded_hours
+def transform_hour(df, col='TransactionDT'):
+    hours = df[col] / (3600)        
+    hours = np.floor(hours) % 24
+    return hours
 
-train['hours'] = make_hour_feature(train)
+train['hours'] = transform_hour(train)
 num_features.remove('TransactionDT')
 cat_onehot_features.append('hours')
 
 
-# In[166]:
+# In[12]:
 
 
 num_transformer = Pipeline(
@@ -169,14 +169,14 @@ num_transformer = Pipeline(
 
 v_transformer = Pipeline(
     steps = [
-        ('imputer', SimpleImputer(strategy='constant')),
+        ('imputer', SimpleImputer(strategy='median')),
         ('scaler', StandardScaler())
     ]
 )
 
 cat_transformer = Pipeline(
     steps = [
-        ('imputer', SimpleImputer(strategy='constant')),
+        ('imputer', SimpleImputer(strategy='most_frequent')),
         ('onehot', OneHotEncoder())
     ]
 )
@@ -200,7 +200,7 @@ preprocessor_num = ColumnTransformer(
 )
 
 
-# In[167]:
+# In[13]:
 
 
 for col in cat_label_features:
@@ -211,57 +211,51 @@ train[cat_label_features] = train[["card1","card2","card3","card5", "addr1", "ad
                                    "id_19","id_20","DeviceInfo"]].apply(le.fit_transform)
 
 
-# In[168]:
+# In[14]:
 
 
 from sklearn.model_selection import train_test_split
 y = train.isFraud.values
 x_train, x_test, y_train, y_test = train_test_split(train, y, stratify = y, test_size = 0.25, random_state = 5)
-x_train, x_valid, y_train, y_valid = train_test_split(x_train, y_train, stratify = y_train, test_size = 0.2, random_state = 5)
 
 
-# In[169]:
+# In[15]:
 
 
 x_train_cat_label = x_train[cat_label_features]
 x_test_cat_label = x_test[cat_label_features]
-x_valid_cat_label = x_valid[cat_label_features]
 mms = MinMaxScaler()
 x_train_cat_label = mms.fit_transform(x_train_cat_label)
 x_test_cat_label = mms.transform(x_test_cat_label)
-x_valid_cat_label = mms.transform(x_valid_cat_label)
 print(x_train_cat_label.shape)
 
 
-# In[170]:
+# In[16]:
 
 
 preprocessor_c.fit(x_train[cat_onehot_features])
 x_train_cat_onehot = preprocessor_c.transform(x_train[cat_onehot_features])
 x_test_cat_onehot = preprocessor_c.transform(x_test[cat_onehot_features])
-x_valid_cat_onehot = preprocessor_c.transform(x_valid[cat_onehot_features])
 
 
-# In[171]:
+# In[17]:
 
 
 x_train_cat_onehot = x_train_cat_onehot.toarray()
 x_test_cat_onehot = x_test_cat_onehot.toarray()
-x_valid_cat_onehot = x_valid_cat_onehot.toarray()
 print(x_train_cat_onehot.shape)
 
 
-# In[172]:
+# In[18]:
 
 
 preprocessor_v.fit(x_train[v_columns])
 x_train_v = preprocessor_v.transform(x_train[v_columns])
 x_test_v = preprocessor_v.transform(x_test[v_columns])
-x_valid_v = preprocessor_v.transform(x_valid[v_columns])
 print(x_train_v.shape)
 
 
-# In[173]:
+# In[19]:
 
 
 #Dimension reduction
@@ -269,38 +263,32 @@ from sklearn.decomposition import PCA
 pca = PCA(n_components = 0.95)
 x_train_v = pca.fit_transform(x_train_v)
 x_test_v = pca.transform(x_test_v)
-x_valid_v = pca.transform(x_valid_v)
 var_explained = pca.explained_variance_ratio_.sum()
 print(x_train_v.shape)
 
 
-# In[174]:
+# In[20]:
 
 
 preprocessor_num.fit(x_train[num_features])
 x_train_num = preprocessor_num.transform(x_train[num_features])
 x_test_num = preprocessor_num.transform(x_test[num_features])
-x_valid_num = preprocessor_num.transform(x_valid[num_features])
 print(x_train_num.shape)
 print(x_test_num.shape)
-print(x_valid_num.shape)
 
 
-# In[175]:
+# In[21]:
 
 
 x_train_num = x_train_num.astype('float32')
 x_test_num = x_test_num.astype('float32')
-x_valid_num = x_valid_num.astype('float32')
 x_train = np.concatenate((x_train_num, x_train_cat_label, x_train_v, x_train_cat_onehot), axis = 1)
 x_test = np.concatenate((x_test_num, x_test_cat_label, x_test_v, x_test_cat_onehot), axis = 1)
-x_valid = np.concatenate((x_valid_num, x_valid_cat_label, x_valid_v, x_valid_cat_onehot), axis = 1)
 print(x_train.shape)
 print(x_test.shape)
-print(x_valid.shape)
 
 
-# In[176]:
+# In[22]:
 
 
 from sklearn.metrics import accuracy_score, confusion_matrix, recall_score, f1_score, precision_score, matthews_corrcoef
@@ -317,65 +305,64 @@ def print_classification_result(true, predict):
 
 # ## Convolution Neural Network
 
-# In[177]:
+# In[23]:
 
 
 x_train = np.array(x_train).reshape(x_train.shape[0], x_train.shape[1], 1)
 x_test = np.array(x_test).reshape(x_test.shape[0], x_test.shape[1], 1)
-x_valid = np.array(x_valid).reshape(x_valid.shape[0], x_valid.shape[1], 1)
 
 
-# In[178]:
+# In[24]:
 
 
 cnn = tf.keras.models.Sequential()
 
 
-# In[179]:
+# In[25]:
 
 
-cnn.add(tf.keras.layers.Conv1D(filters = 64, kernel_size = 3, activation = 'relu', input_shape = [227, 1]))
+cnn.add(tf.keras.layers.Conv1D(filters = 64, kernel_size = 3, activation = 'relu', input_shape = [x_train.shape[1], 1]))
 cnn.add(tf.keras.layers.MaxPool1D(pool_size = 2, strides = 1))
 
 
-# In[180]:
+# In[26]:
 
 
 cnn.add(tf.keras.layers.Conv1D(filters = 64, kernel_size = 2, activation = 'relu'))
 cnn.add(tf.keras.layers.MaxPool1D(pool_size = 2, strides = 1))
 
 
-# In[181]:
+# In[27]:
 
 
 cnn.add(tf.keras.layers.Flatten())
 
 
-# In[182]:
+# In[28]:
 
 
 cnn.add(tf.keras.layers.Dense(units = 128, activation = 'relu'))
 
 
-# In[183]:
+# In[29]:
 
 
 cnn.add(tf.keras.layers.Dense(units = 1, activation = 'sigmoid'))
 
 
-# In[184]:
+# In[30]:
 
 
 cnn.compile(optimizer = 'adam', loss = 'binary_crossentropy', metrics = ['accuracy'])
 
 
-# In[185]:
+# In[31]:
 
 
-loss = cnn.fit(x_train, y_train, batch_size = 32, epochs = 8, verbose = 1, validation_data = (x_valid, y_valid))
+loss = cnn.fit(x_train, y_train, batch_size = 32, epochs = 8, verbose = 1, validation_split = 0.3)
 
 
-# In[186]:
+# In[32]:
 
 
 plt.plot(loss.history['loss'])
@@ -387,7 +374,7 @@ plt.legend(['train', 'test'], loc='upper left')
 plt.show()
 
 
-# In[187]:
+# In[33]:
 
 
 y_pred = cnn.predict(x_test)
