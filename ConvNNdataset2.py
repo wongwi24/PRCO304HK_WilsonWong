@@ -312,57 +312,57 @@ x_train = np.array(x_train).reshape(x_train.shape[0], x_train.shape[1], 1)
 x_test = np.array(x_test).reshape(x_test.shape[0], x_test.shape[1], 1)
 
 
-# In[24]:
+# In[33]:
 
 
 cnn = tf.keras.models.Sequential()
 
 
-# In[25]:
+# In[34]:
 
 
 cnn.add(tf.keras.layers.Conv1D(filters = 64, kernel_size = 3, activation = 'relu', input_shape = [x_train.shape[1], 1]))
 cnn.add(tf.keras.layers.MaxPool1D(pool_size = 2, strides = 1))
 
 
-# In[26]:
+# In[35]:
 
 
 cnn.add(tf.keras.layers.Conv1D(filters = 64, kernel_size = 2, activation = 'relu'))
 cnn.add(tf.keras.layers.MaxPool1D(pool_size = 2, strides = 1))
 
 
-# In[27]:
+# In[36]:
 
 
 cnn.add(tf.keras.layers.Flatten())
 
 
-# In[28]:
+# In[37]:
 
 
 cnn.add(tf.keras.layers.Dense(units = 128, activation = 'relu'))
 
 
-# In[29]:
+# In[38]:
 
 
 cnn.add(tf.keras.layers.Dense(units = 1, activation = 'sigmoid'))
 
 
-# In[30]:
+# In[39]:
 
 
 cnn.compile(optimizer = 'adam', loss = 'binary_crossentropy', metrics = ['accuracy'])
 
 
-# In[31]:
+# In[40]:
 
 
 loss = cnn.fit(x_train, y_train, batch_size = 32, epochs = 8, verbose = 1, validation_split = 0.3)
 
 
-# In[32]:
+# In[41]:
 
 
 plt.plot(loss.history['loss'])
@@ -374,7 +374,129 @@ plt.legend(['train', 'test'], loc='upper left')
 plt.show()
 
 
-# In[33]:
+# In[42]:
+
+
+y_pred = cnn.predict(x_test)
+y_pred = np.round(y_pred)
+print_classification_result(y_test, y_pred)
+
+
+# ## Parameter testing
+
+# In[28]:
+
+
+cnn = tf.keras.models.Sequential()
+cnn.add(tf.keras.layers.Conv1D(filters = 64, kernel_size = 4, activation = 'relu', input_shape = [x_train.shape[1], 1]))
+cnn.add(tf.keras.layers.MaxPool1D(pool_size = 2, strides = 1))
+cnn.add(tf.keras.layers.Conv1D(filters = 64, kernel_size = 3, activation = 'relu'))
+cnn.add(tf.keras.layers.MaxPool1D(pool_size = 2, strides = 1))
+cnn.add(tf.keras.layers.Flatten())
+cnn.add(tf.keras.layers.Dense(units = 128, activation = 'relu'))
+cnn.add(tf.keras.layers.Dense(units = 1, activation = 'sigmoid'))
+cnn.compile(optimizer = 'adam', loss = 'binary_crossentropy', metrics = ['accuracy'])
+
+
+# In[29]:
+
+
+loss = cnn.fit(x_train, y_train, batch_size = 32, epochs = 8, verbose = 1, validation_split = 0.3)
+
+
+# In[30]:
+
+
+plt.plot(loss.history['loss'])
+plt.plot(loss.history['val_loss'])
+plt.title('model loss')
+plt.ylabel('loss')
+plt.xlabel('epoch')
+plt.legend(['train', 'test'], loc='upper left')
+plt.show()
+
+
+# In[31]:
+
+
+y_pred = cnn.predict(x_test)
+y_pred = np.round(y_pred)
+print_classification_result(y_test, y_pred)
+
+
+# In[25]:
+
+
+cnn = tf.keras.models.Sequential()
+cnn.add(tf.keras.layers.Conv1D(filters = 128, kernel_size = 3, activation = 'relu', input_shape = [x_train.shape[1], 1]))
+cnn.add(tf.keras.layers.MaxPool1D(pool_size = 2, strides = 1))
+cnn.add(tf.keras.layers.Conv1D(filters = 128, kernel_size = 2, activation = 'relu'))
+cnn.add(tf.keras.layers.MaxPool1D(pool_size = 2, strides = 1))
+cnn.add(tf.keras.layers.Flatten())
+cnn.add(tf.keras.layers.Dense(units = 128, activation = 'relu'))
+cnn.add(tf.keras.layers.Dense(units = 1, activation = 'sigmoid'))
+cnn.compile(optimizer = 'adam', loss = 'binary_crossentropy', metrics = ['accuracy'])
+
+
+# In[26]:
+
+
+loss = cnn.fit(x_train, y_train, batch_size = 32, epochs = 8, verbose = 1, validation_split = 0.3)
+
+
+# In[27]:
+
+
+plt.plot(loss.history['loss'])
+plt.plot(loss.history['val_loss'])
+plt.title('model loss')
+plt.ylabel('loss')
+plt.xlabel('epoch')
+plt.legend(['train', 'test'], loc='upper left')
+plt.show()
+
+
+# In[28]:
+
+
+y_pred = cnn.predict(x_test)
+y_pred = np.round(y_pred)
+print_classification_result(y_test, y_pred)
+
+
+# In[24]:
+
+
+cnn = tf.keras.models.Sequential()
+cnn.add(tf.keras.layers.Conv1D(filters = 32, kernel_size = 3, activation = 'relu', input_shape = [x_train.shape[1], 1]))
+cnn.add(tf.keras.layers.MaxPool1D(pool_size = 2, strides = 1))
+cnn.add(tf.keras.layers.Conv1D(filters = 32, kernel_size = 2, activation = 'relu'))
+cnn.add(tf.keras.layers.MaxPool1D(pool_size = 2, strides = 1))
+cnn.add(tf.keras.layers.Flatten())
+cnn.add(tf.keras.layers.Dense(units = 128, activation = 'relu'))
+cnn.add(tf.keras.layers.Dense(units = 1, activation = 'sigmoid'))
+cnn.compile(optimizer = 'adam', loss = 'binary_crossentropy', metrics = ['accuracy'])
+
+
+# In[25]:
+
+
+loss = cnn.fit(x_train, y_train, batch_size = 32, epochs = 8, verbose = 1, validation_split = 0.3)
+
+
+# In[26]:
+
+
+plt.plot(loss.history['loss'])
+plt.plot(loss.history['val_loss'])
+plt.title('model loss')
+plt.ylabel('loss')
+plt.xlabel('epoch')
+plt.legend(['train', 'test'], loc='upper left')
+plt.show()
+
+
+# In[27]:
 
 
 y_pred = cnn.predict(x_test)
