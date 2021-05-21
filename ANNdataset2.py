@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[59]:
+# In[1]:
 
 
 import numpy as np
@@ -20,14 +20,14 @@ train_id = pd.read_csv('creditcard_dataset2.csv/train_identity.csv')
 train_trans = pd.read_csv('creditcard_dataset2.csv/train_transaction.csv')
 
 
-# In[60]:
+# In[2]:
 
 
 print(train_id.shape)
 print(train_trans.shape)
 
 
-# In[61]:
+# In[3]:
 
 
 #Merge Transaction and Identity table
@@ -36,14 +36,14 @@ train = train_trans.merge(train_id, how='left', on='TransactionID')
 train.isnull().sum()
 
 
-# In[62]:
+# In[4]:
 
 
 del train_id
 del train_trans
 
 
-# In[63]:
+# In[5]:
 
 
 #Remove high missing value columns
@@ -54,13 +54,13 @@ for col in train.columns:
         columnsToDelete.append(col)
 
 
-# In[64]:
+# In[6]:
 
 
 train = train.drop(columns=columnsToDelete)
 
 
-# In[65]:
+# In[7]:
 
 
 v_columns = []
@@ -69,7 +69,7 @@ for col in ['V'+str(x) for x in range(1,340)]:
         v_columns.append(col)
 
 
-# In[66]:
+# In[8]:
 
 
 cat_label_features = ["card1","card2","card3","card5", "addr1", "addr2", "id_13","id_17","id_19","id_20","id_31","DeviceInfo"]
@@ -88,7 +88,7 @@ print(len(cat_label_features))
 print(len(num_features))
 
 
-# In[67]:
+# In[9]:
 
 
 emails = {'gmail': 'google', 'att.net': 'att', 'twc.com': 'spectrum', 'scranton.edu': 'other', 'optonline.net': 'other',
@@ -111,7 +111,7 @@ for c in ['P_emaildomain', 'R_emaildomain']:
     train[c] = train[c].map(emails)
 
 
-# In[68]:
+# In[10]:
 
 
 train["new_browser"] = np.zeros(train.shape[0])
@@ -144,7 +144,7 @@ cat_onehot_features.append('new_browser')
 train = train.drop(columns='id_31')
 
 
-# In[69]:
+# In[11]:
 
 
 def transform_hour(df, col='TransactionDT'):
@@ -157,7 +157,7 @@ num_features.remove('TransactionDT')
 cat_onehot_features.append('hours')
 
 
-# In[70]:
+# In[12]:
 
 
 num_transformer = Pipeline(
@@ -200,7 +200,7 @@ preprocessor_num = ColumnTransformer(
 )
 
 
-# In[71]:
+# In[13]:
 
 
 for col in cat_label_features:
@@ -211,7 +211,7 @@ train[cat_label_features] = train[["card1","card2","card3","card5", "addr1",
                                    "addr2", "id_13","id_17","id_19","id_20","DeviceInfo"]].apply(le.fit_transform)
 
 
-# In[72]:
+# In[14]:
 
 
 from sklearn.model_selection import train_test_split
@@ -219,7 +219,7 @@ y_train = train.isFraud.values
 x_train, x_test, y_train, y_test = train_test_split(train, y_train, stratify = y_train, test_size = 0.25, random_state = 5)
 
 
-# In[73]:
+# In[15]:
 
 
 x_train_cat_label = x_train[cat_label_features]
@@ -230,7 +230,7 @@ x_test_cat_label = mms.transform(x_test_cat_label)
 print(x_train_cat_label.shape)
 
 
-# In[74]:
+# In[16]:
 
 
 preprocessor_c.fit(x_train[cat_onehot_features])
@@ -238,7 +238,7 @@ x_train_cat_onehot = preprocessor_c.transform(x_train[cat_onehot_features])
 x_test_cat_onehot = preprocessor_c.transform(x_test[cat_onehot_features])
 
 
-# In[75]:
+# In[17]:
 
 
 x_train_cat_onehot = x_train_cat_onehot.toarray()
@@ -246,7 +246,7 @@ x_test_cat_onehot = x_test_cat_onehot.toarray()
 print(x_train_cat_onehot.shape)
 
 
-# In[76]:
+# In[18]:
 
 
 preprocessor_v.fit(x_train[v_columns])
@@ -255,7 +255,7 @@ x_test_v = preprocessor_v.transform(x_test[v_columns])
 print(x_train_v.shape)
 
 
-# In[77]:
+# In[19]:
 
 
 #Dimension reduction
@@ -267,7 +267,7 @@ var_explained = pca.explained_variance_ratio_.sum()
 print(x_train_v.shape)
 
 
-# In[78]:
+# In[20]:
 
 
 preprocessor_num.fit(x_train[num_features])
@@ -277,7 +277,7 @@ print(x_train_num.shape)
 print(x_test_num.shape)
 
 
-# In[79]:
+# In[21]:
 
 
 x_train_num = x_train_num.astype('float32')
@@ -288,7 +288,7 @@ print(x_train.shape)
 print(x_test.shape)
 
 
-# In[80]:
+# In[22]:
 
 
 from sklearn.metrics import accuracy_score, confusion_matrix, recall_score, f1_score, precision_score, matthews_corrcoef
@@ -303,37 +303,35 @@ def print_classification_result(true, predict):
     print(f"Precision_Score:{precision_score(true, predict)}")
 
 
-# ## Support Vector Machine
-
 # ## Artificial Neural Network
 
-# In[81]:
+# In[23]:
 
 
 ann = tf.keras.models.Sequential()
 
 
-# In[82]:
+# In[24]:
 
 
 ann.add(tf.keras.layers.Dense(units = x_train.shape[1] + 1, activation = "relu"))
-ann.add(tf.keras.layers.Dense(units = 15, activation = "relu"))
+ann.add(tf.keras.layers.Dense(units = x_train.shape[1]/2, activation = "relu"))
 ann.add(tf.keras.layers.Dense(units = 1, activation = "sigmoid"))
 
 
-# In[83]:
+# In[25]:
 
 
 ann.compile(optimizer = 'adam', loss = 'binary_crossentropy', metrics = ['accuracy'])
 
 
-# In[84]:
+# In[26]:
 
 
 loss = ann.fit(x_train, y_train, batch_size = 32, epochs = 10, validation_split = 0.3)
 
 
-# In[85]:
+# In[27]:
 
 
 plt.plot(loss.history['loss'])
@@ -345,7 +343,7 @@ plt.legend(['train', 'test'], loc='upper left')
 plt.show()
 
 
-# In[86]:
+# In[28]:
 
 
 y_pred = ann.predict(x_test)
@@ -353,7 +351,7 @@ y_pred = np.round(y_pred)
 print_classification_result(y_test, y_pred)
 
 
-# In[87]:
+# In[29]:
 
 
 from sklearn.metrics import plot_confusion_matrix
