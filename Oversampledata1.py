@@ -104,7 +104,7 @@ plt.show()
 
 # ## Data Preprocessing
 
-# In[3]:
+# In[10]:
 
 
 #Split dataset into test train and valid
@@ -114,7 +114,7 @@ from sklearn.preprocessing import StandardScaler
 x_train, x_test, y_train, y_test = train_test_split(X, Y, stratify = Y, test_size = 0.25, random_state = 5)
 
 
-# In[4]:
+# In[11]:
 
 
 ct = ColumnTransformer([
@@ -124,14 +124,14 @@ x_train = ct.fit_transform(x_train)
 x_test = ct.transform(x_test)
 
 
-# In[5]:
+# In[12]:
 
 
 smote = SMOTE(sampling_strategy='minority')
 x_train, y_train = smote.fit_resample(x_train, y_train)
 
 
-# In[6]:
+# In[13]:
 
 
 weight_nf = y_train.value_counts()[0] / len(y_train)
@@ -140,7 +140,7 @@ print(f"Non-Fraud weight: {weight_nf}")
 print(f"Fraud weight: {weight_f}")
 
 
-# In[7]:
+# In[14]:
 
 
 print(f"Train Data shape: {x_train.shape} Train Class Data shape: {y_train.shape}")
@@ -149,7 +149,7 @@ print(f"Test Data shape: {x_test.shape} Test Class Data shape: {y_test.shape}")
 
 # ## Random Forest Classifier
 
-# In[9]:
+# In[15]:
 
 
 from sklearn.metrics import accuracy_score, confusion_matrix, recall_score, f1_score, precision_score, matthews_corrcoef
@@ -168,7 +168,7 @@ def print_classification_result(true, predict):
 
 
 from sklearn.ensemble import RandomForestClassifier
-randfclassifier = RandomForestClassifier(n_estimators = 100, criterion = "entropy")
+randfclassifier = RandomForestClassifier(n_estimators = 100, criterion = "gini")
 randfclassifier.fit(x_train, y_train)
 y_test_pred_randf = randfclassifier.predict(x_test)
 print_classification_result(y_test, y_test_pred_randf)
@@ -189,7 +189,7 @@ plt.show()
 
 
 from sklearn.svm import SVC
-KSVM = SVC(kernel = "rbf")
+KSVM = SVC(kernel = "rbf", C = 10)
 KSVM.fit(x_train, y_train)
 y_test_pred_KSVM = KSVM.predict(x_test)
 print_classification_result(y_test, y_test_pred_KSVM)
@@ -248,17 +248,17 @@ plt.show()
 
 # ## Decision Tree Classifier
 
-# In[24]:
+# In[20]:
 
 
 from sklearn.tree import DecisionTreeClassifier
-tree = DecisionTreeClassifier(criterion = "entropy")
+tree = DecisionTreeClassifier(criterion = "gini", min_samples_leaf = 10)
 tree.fit(x_train, y_train)
 y_test_pred_tree = tree.predict(x_test)
 print_classification_result(y_test, y_test_pred_tree)
 
 
-# In[25]:
+# In[21]:
 
 
 plt.figure(figsize = (7,5))
@@ -269,17 +269,17 @@ plt.show()
 
 # ## Logistics Regression
 
-# In[10]:
+# In[22]:
 
 
 from sklearn.linear_model import LogisticRegression
-log = LogisticRegression(C=1, class_weight="dict")
+log = LogisticRegression(C=1, class_weight= None)
 log.fit(x_train, y_train)
 y_test_pred_log = log.predict(x_test)
 print_classification_result(y_test, y_test_pred_log)
 
 
-# In[11]:
+# In[23]:
 
 
 plt.figure(figsize = (7,5))
@@ -290,26 +290,24 @@ plt.show()
 
 # ## Artificial Neural Network
 
-# In[22]:
+# In[24]:
 
 
 import tensorflow as tf
 ann = tf.keras.models.Sequential()
-ann.add(tf.keras.layers.Dense(units = 228, activation = "relu"))
-ann.add(tf.keras.layers.Dropout(0.2))
-ann.add(tf.keras.layers.Dense(units = 114, activation = "relu"))
-ann.add(tf.keras.layers.Dropout(0.2))
+ann.add(tf.keras.layers.Dense(units = 31, activation = "relu"))
+ann.add(tf.keras.layers.Dense(units = 15, activation = "relu"))
 ann.add(tf.keras.layers.Dense(units = 1, activation = "sigmoid"))
 ann.compile(optimizer = 'adam', loss = 'binary_crossentropy', metrics = ['accuracy'])
 
 
-# In[23]:
+# In[25]:
 
 
 loss = ann.fit(x_train, y_train, batch_size = 32, epochs = 20, validation_split = 0.3)
 
 
-# In[24]:
+# In[26]:
 
 
 plt.plot(loss.history['loss'])
@@ -321,7 +319,7 @@ plt.legend(['train', 'test'], loc='upper left')
 plt.show()
 
 
-# In[25]:
+# In[27]:
 
 
 y_pred = ann.predict(x_test)
@@ -329,7 +327,7 @@ y_pred = np.round(y_pred)
 print_classification_result(y_test, y_pred)
 
 
-# In[26]:
+# In[28]:
 
 
 from sklearn.metrics import plot_confusion_matrix

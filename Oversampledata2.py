@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[20]:
+# In[1]:
 
 
 import numpy as np
@@ -19,7 +19,7 @@ from imblearn.over_sampling import SMOTE
 import tensorflow as tf
 
 
-# In[21]:
+# In[2]:
 
 
 #Merge Transaction and Identity table
@@ -28,14 +28,14 @@ train_trans = pd.read_csv('creditcard_dataset2.csv/train_transaction.csv')
 train = train_trans.merge(train_id, how='left', on='TransactionID')
 
 
-# In[22]:
+# In[3]:
 
 
 print(train_id.shape)
 print(train_trans.shape)
 
 
-# In[23]:
+# In[4]:
 
 
 #Check for missing values
@@ -45,13 +45,13 @@ print(f"Non-Fraud weight: {weight_nf}")
 print(f"Fraud weight: {weight_f}")
 
 
-# In[24]:
+# In[5]:
 
 
 train.isnull().sum()
 
 
-# In[25]:
+# In[6]:
 
 
 #Fraud Counts
@@ -63,7 +63,7 @@ plt.xticks([0,1], labels=["not fraud","fraud"])
 plt.show()
 
 
-# In[26]:
+# In[7]:
 
 
 del train_id
@@ -72,7 +72,7 @@ del train_trans
 
 # ## Preprocess Data
 
-# In[27]:
+# In[8]:
 
 
 #Remove high missing value columns
@@ -83,13 +83,13 @@ for col in train.columns:
         columnsToDelete.append(col)
 
 
-# In[28]:
+# In[9]:
 
 
 train = train.drop(columns=columnsToDelete)
 
 
-# In[29]:
+# In[10]:
 
 
 v_columns = []
@@ -98,7 +98,7 @@ for col in ['V'+str(x) for x in range(1,340)]:
         v_columns.append(col)
 
 
-# In[30]:
+# In[11]:
 
 
 cat_label_features = ["card1","card2","card3","card5", "addr1", "addr2", "id_13","id_17","id_19","id_20","id_31","DeviceInfo"]
@@ -117,7 +117,7 @@ print(len(cat_label_features))
 print(len(num_features))
 
 
-# In[31]:
+# In[12]:
 
 
 emails = {'gmail': 'google', 'att.net': 'att', 'twc.com': 'spectrum', 'scranton.edu': 'other', 'optonline.net': 'other',
@@ -139,7 +139,7 @@ for c in ['P_emaildomain', 'R_emaildomain']:
     train[c] = train[c].map(emails)
 
 
-# In[32]:
+# In[13]:
 
 
 train["new_browser"] = np.zeros(train.shape[0])
@@ -172,7 +172,7 @@ cat_onehot_features.append('new_browser')
 train = train.drop(columns='id_31')
 
 
-# In[33]:
+# In[14]:
 
 
 def transform_hour(df, col='TransactionDT'):
@@ -185,7 +185,7 @@ num_features.remove('TransactionDT')
 cat_onehot_features.append('hours')
 
 
-# In[34]:
+# In[15]:
 
 
 num_transformer = Pipeline(
@@ -228,7 +228,7 @@ preprocessor_num = ColumnTransformer(
 )
 
 
-# In[35]:
+# In[16]:
 
 
 for col in cat_label_features:
@@ -239,7 +239,7 @@ train[cat_label_features] = train[["card1","card2","card3","card5", "addr1", "ad
                                    "id_13","id_17","id_19","id_20","DeviceInfo"]].apply(le.fit_transform)
 
 
-# In[36]:
+# In[17]:
 
 
 from sklearn.model_selection import train_test_split
@@ -247,7 +247,7 @@ y = train.isFraud.values
 x_train, x_test, y_train, y_test = train_test_split(train, y, test_size = 0.25, random_state = 5)
 
 
-# In[37]:
+# In[18]:
 
 
 x_train_cat_label = x_train[cat_label_features]
@@ -258,7 +258,7 @@ x_test_cat_label = mms.transform(x_test_cat_label)
 print(x_train_cat_label.shape)
 
 
-# In[38]:
+# In[19]:
 
 
 preprocessor_c.fit(x_train[cat_onehot_features])
@@ -266,7 +266,7 @@ x_train_cat_onehot = preprocessor_c.transform(x_train[cat_onehot_features])
 x_test_cat_onehot = preprocessor_c.transform(x_test[cat_onehot_features])
 
 
-# In[39]:
+# In[20]:
 
 
 x_train_cat_onehot = x_train_cat_onehot.toarray()
@@ -274,7 +274,7 @@ x_test_cat_onehot = x_test_cat_onehot.toarray()
 print(x_train_cat_onehot.shape)
 
 
-# In[40]:
+# In[21]:
 
 
 preprocessor_v.fit(x_train[v_columns])
@@ -283,7 +283,7 @@ x_test_v = preprocessor_v.transform(x_test[v_columns])
 print(x_train_v.shape)
 
 
-# In[41]:
+# In[22]:
 
 
 #Dimension reduction
@@ -295,7 +295,7 @@ var_explained = pca.explained_variance_ratio_.sum()
 print(x_train_v.shape)
 
 
-# In[42]:
+# In[23]:
 
 
 preprocessor_num.fit(x_train[num_features])
@@ -305,7 +305,7 @@ print(x_train_num.shape)
 print(x_test_num.shape)
 
 
-# In[43]:
+# In[24]:
 
 
 x_train_num = x_train_num.astype('float32')
@@ -316,7 +316,7 @@ print(x_train.shape)
 print(x_test.shape)
 
 
-# In[44]:
+# In[25]:
 
 
 smote = SMOTE(sampling_strategy='minority')
@@ -324,7 +324,7 @@ x_train, y_train = smote.fit_resample(x_train, y_train)
 print(x_train.shape)
 
 
-# In[45]:
+# In[26]:
 
 
 from sklearn.metrics import accuracy_score, confusion_matrix, recall_score, f1_score, precision_score, matthews_corrcoef
@@ -345,7 +345,7 @@ def print_classification_result(true, predict):
 
 
 from sklearn.ensemble import RandomForestClassifier
-randfclassifier = RandomForestClassifier(n_estimators = 100, criterion = "entropy")
+randfclassifier = RandomForestClassifier(n_estimators = 300, criterion = "gini", bootstrap = False)
 randfclassifier.fit(x_train, y_train)
 y_test_pred_randf = randfclassifier.predict(x_test)
 print_classification_result(y_test, y_test_pred_randf)
@@ -405,17 +405,17 @@ plt.show()
 
 # ## Decision Tree Classifier
 
-# In[33]:
+# In[42]:
 
 
 from sklearn.tree import DecisionTreeClassifier
-tree = DecisionTreeClassifier(criterion = "entropy")
+tree = DecisionTreeClassifier(criterion = "gini", min_samples_leaf = 10)
 tree.fit(x_train, y_train)
 y_test_pred_tree = tree.predict(x_test)
 print_classification_result(y_test, y_test_pred_tree)
 
 
-# In[34]:
+# In[43]:
 
 
 plt.figure(figsize = (7,5))
@@ -426,17 +426,17 @@ plt.show()
 
 # ## Logistics Regression
 
-# In[35]:
+# In[29]:
 
 
 from sklearn.linear_model import LogisticRegression
-log = LogisticRegression(C=1, class_weight="dict")
+log = LogisticRegression(C=1, class_weight= None)
 log.fit(x_train, y_train)
 y_test_pred_log = log.predict(x_test)
 print_classification_result(y_test, y_test_pred_log)
 
 
-# In[36]:
+# In[30]:
 
 
 plt.figure(figsize = (7,5))
@@ -447,25 +447,23 @@ plt.show()
 
 # ## Artifical Neural Network
 
-# In[58]:
+# In[33]:
 
 
 ann = tf.keras.models.Sequential()
 ann.add(tf.keras.layers.Dense(units = x_train.shape[1] + 1, activation = "relu"))
-ann.add(tf.keras.layers.Dropout(0.2))
-ann.add(tf.keras.layers.Dense(units = 114, activation = "relu"))
-ann.add(tf.keras.layers.Dropout(0.2))
+ann.add(tf.keras.layers.Dense(units = x_train.shape[1]/2, activation = "relu"))
 ann.add(tf.keras.layers.Dense(units = 1, activation = "sigmoid"))
 ann.compile(optimizer = 'adam', loss = 'binary_crossentropy', metrics = ['accuracy'])
 
 
-# In[59]:
+# In[34]:
 
 
 loss = ann.fit(x_train, y_train, batch_size = 32, epochs = 20, validation_split = 0.3)
 
 
-# In[60]:
+# In[35]:
 
 
 plt.plot(loss.history['loss'])
@@ -477,7 +475,7 @@ plt.legend(['train', 'test'], loc='upper left')
 plt.show()
 
 
-# In[61]:
+# In[36]:
 
 
 y_pred = ann.predict(x_test)
@@ -485,7 +483,7 @@ y_pred = np.round(y_pred)
 print_classification_result(y_test, y_pred)
 
 
-# In[62]:
+# In[37]:
 
 
 from sklearn.metrics import plot_confusion_matrix

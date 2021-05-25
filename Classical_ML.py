@@ -177,17 +177,17 @@ def print_cross_val_result(cv):
     print(f"Precision_Score: \n{cv['test_precision'].mean()}")
 
 
-# In[16]:
+# In[45]:
 
 
 from sklearn.ensemble import RandomForestClassifier
-randfclassifier = RandomForestClassifier(n_estimators = 100, criterion = "entropy")
+randfclassifier = RandomForestClassifier(n_estimators = 100, criterion = "gini")
 randfclassifier.fit(x_train, y_train)
 y_test_pred_randf = randfclassifier.predict(x_test)
 print_classification_result(y_test, y_test_pred_randf)
 
 
-# In[17]:
+# In[46]:
 
 
 plt.figure(figsize = (7,5))
@@ -199,7 +199,7 @@ plt.show()
 # In[18]:
 
 
-randfclassifier = RandomForestClassifier(n_estimators = 100, criterion = "entropy")
+randfclassifier = RandomForestClassifier(n_estimators = 100, criterion = "gini")
 cv = cross_validate(randfclassifier, x_train, y_train, cv=5, 
                scoring=('accuracy','f1','recall','precision'), 
                return_train_score=True)
@@ -214,7 +214,7 @@ print_cross_val_result(cv)
 # In[20]:
 
 
-randfclassifier = RandomForestClassifier(n_estimators = 200, criterion = "entropy")
+randfclassifier = RandomForestClassifier(n_estimators = 200, criterion = "gini")
 cv = cross_validate(randfclassifier, x_train, y_train, cv=5, 
                scoring=('accuracy','f1','recall','precision'), 
                return_train_score=True)
@@ -229,7 +229,7 @@ print_cross_val_result(cv)
 # In[22]:
 
 
-randfclassifier = RandomForestClassifier(n_estimators = 300, criterion = "entropy")
+randfclassifier = RandomForestClassifier(n_estimators = 300, criterion = "gini")
 cv = cross_validate(randfclassifier, x_train, y_train, cv=5, 
                scoring=('accuracy','f1','recall','precision'), 
                return_train_score=True)
@@ -241,25 +241,85 @@ cv = cross_validate(randfclassifier, x_train, y_train, cv=5,
 print_cross_val_result(cv)
 
 
-# ## Kernel Support Vector Machine
-
 # In[24]:
 
 
+randfclassifier = RandomForestClassifier(n_estimators = 100, criterion = "gini", bootstrap = False)
+cv = cross_validate(randfclassifier, x_train, y_train, cv=5, 
+               scoring=('accuracy','f1','recall','precision'), 
+               return_train_score=True)
+
+
+# In[25]:
+
+
+print_cross_val_result(cv)
+
+
+# ## Kernel Support Vector Machine
+
+# In[32]:
+
+
 from sklearn.svm import SVC
-KSVM = SVC(kernel = "rbf")
+KSVM = SVC(kernel = "rbf", C = 10)
 KSVM.fit(x_train, y_train)
 y_test_pred_KSVM = KSVM.predict(x_test)
 print_classification_result(y_test, y_test_pred_KSVM)
 
 
-# In[25]:
+# In[33]:
 
 
 plt.figure(figsize = (7,5))
 cm = sb.heatmap(confusion_matrix(y_test, y_test_pred_KSVM), annot=True, cmap="Blues", fmt="g")
 cm.set_title('KSVM')
 plt.show()
+
+
+# In[22]:
+
+
+KSVM = SVC(kernel = "rbf", C = 1)
+cv = cross_validate(KSVM, x_train, y_train, cv=5, 
+               scoring=('accuracy','f1','recall','precision'), 
+               return_train_score=True)
+
+
+# In[23]:
+
+
+print_cross_val_result(cv)
+
+
+# In[24]:
+
+
+KSVM = SVC(kernel = "rbf", C = 10)
+cv = cross_validate(KSVM, x_train, y_train, cv=5, 
+               scoring=('accuracy','f1','recall','precision'), 
+               return_train_score=True)
+
+
+# In[25]:
+
+
+print_cross_val_result(cv)
+
+
+# In[18]:
+
+
+KSVM = SVC(kernel = "rbf", C = 0.1)
+cv = cross_validate(KSVM, x_train, y_train, cv=5, 
+               scoring=('accuracy','f1','recall','precision'), 
+               return_train_score=True)
+
+
+# In[19]:
+
+
+print_cross_val_result(cv)
 
 
 # In[26]:
@@ -358,6 +418,21 @@ cv = cross_validate(knn, x_train, y_train, cv=5,
 print_cross_val_result(cv)
 
 
+# In[43]:
+
+
+knn = KNeighborsClassifier(n_neighbors = 5, p = 1, metric = "minkowski")
+cv = cross_validate(knn, x_train, y_train, cv=5, 
+               scoring=('accuracy','f1','recall','precision'), 
+               return_train_score=True)
+
+
+# In[44]:
+
+
+print_cross_val_result(cv)
+
+
 # ## Naive Bayes Classifier
 
 # In[38]:
@@ -381,17 +456,18 @@ plt.show()
 
 # ## Decision Tree Classifier
 
-# In[40]:
+# In[53]:
 
 
 from sklearn.tree import DecisionTreeClassifier
-tree = DecisionTreeClassifier(criterion = "entropy")
+tree = DecisionTreeClassifier(criterion = "gini", min_samples_leaf = 10)
 tree.fit(x_train, y_train)
 y_test_pred_tree = tree.predict(x_test)
+print(f"max depth of tree: {tree.tree_.max_depth}\n")
 print_classification_result(y_test, y_test_pred_tree)
 
 
-# In[41]:
+# In[54]:
 
 
 plt.figure(figsize = (7,5))
@@ -433,7 +509,7 @@ print_cross_val_result(cv)
 # In[46]:
 
 
-tree = DecisionTreeClassifier(criterion = "entropy", splitter = "random")
+tree = DecisionTreeClassifier(criterion = "gini", splitter = "random")
 cv = cross_validate(tree, x_train, y_train, cv=5, 
                scoring=('accuracy','f1','recall','precision'), 
                return_train_score=True)
@@ -448,7 +524,7 @@ print_cross_val_result(cv)
 # In[48]:
 
 
-tree = DecisionTreeClassifier(criterion = "entropy", max_features = "sqrt")
+tree = DecisionTreeClassifier(criterion = "gini", max_features = "sqrt")
 cv = cross_validate(tree, x_train, y_train, cv=5, 
                scoring=('accuracy','f1','recall','precision'), 
                return_train_score=True)
@@ -460,19 +536,64 @@ cv = cross_validate(tree, x_train, y_train, cv=5,
 print_cross_val_result(cv)
 
 
-# ## Logistics Regression
+# In[57]:
+
+
+tree = DecisionTreeClassifier(criterion = "gini", min_samples_leaf = 15)
+cv = cross_validate(tree, x_train, y_train, cv=5, 
+               scoring=('accuracy','f1','recall','precision'), 
+               return_train_score=True)
+
+
+# In[58]:
+
+
+print_cross_val_result(cv)
+
+
+# In[49]:
+
+
+tree = DecisionTreeClassifier(criterion = "gini", min_samples_leaf = 10)
+cv = cross_validate(tree, x_train, y_train, cv=5, 
+               scoring=('accuracy','f1','recall','precision'), 
+               return_train_score=True)
+
 
 # In[50]:
 
 
+print_cross_val_result(cv)
+
+
+# In[51]:
+
+
+tree = DecisionTreeClassifier(criterion = "gini", max_depth = 20)
+cv = cross_validate(tree, x_train, y_train, cv=5, 
+               scoring=('accuracy','f1','recall','precision'), 
+               return_train_score=True)
+
+
+# In[52]:
+
+
+print_cross_val_result(cv)
+
+
+# ## Logistics Regression
+
+# In[29]:
+
+
 from sklearn.linear_model import LogisticRegression
-log = LogisticRegression(C=1, class_weight="dict")
+log = LogisticRegression(C=1, class_weight=None)
 log.fit(x_train, y_train)
 y_test_pred_log = log.predict(x_test)
 print_classification_result(y_test, y_test_pred_log)
 
 
-# In[51]:
+# In[30]:
 
 
 plt.figure(figsize = (7,5))
@@ -481,7 +602,7 @@ cm.set_title('Logistic Regression')
 plt.show()
 
 
-# In[52]:
+# In[31]:
 
 
 log = LogisticRegression(C=1, class_weight="balanced")
@@ -490,13 +611,13 @@ cv = cross_validate(log, x_train, y_train, cv=5,
                return_train_score=True)
 
 
-# In[53]:
+# In[32]:
 
 
 print_cross_val_result(cv)
 
 
-# In[54]:
+# In[33]:
 
 
 log = LogisticRegression(C=0.1, class_weight="balanced")
@@ -505,13 +626,13 @@ cv = cross_validate(log, x_train, y_train, cv=5,
                return_train_score=True)
 
 
-# In[55]:
+# In[34]:
 
 
 print_cross_val_result(cv)
 
 
-# In[56]:
+# In[35]:
 
 
 log = LogisticRegression(C=10, class_weight="balanced")
@@ -520,37 +641,52 @@ cv = cross_validate(log, x_train, y_train, cv=5,
                return_train_score=True)
 
 
-# In[57]:
+# In[36]:
 
 
 print_cross_val_result(cv)
 
 
-# In[58]:
+# In[37]:
 
 
-log = LogisticRegression(C=1, class_weight="dict")
+log = LogisticRegression(C=1, class_weight=None)
 cv = cross_validate(log, x_train, y_train, cv=5, 
                scoring=('accuracy','f1','recall','precision'), 
                return_train_score=True)
 
 
-# In[59]:
+# In[38]:
 
 
 print_cross_val_result(cv)
 
 
-# In[60]:
+# In[39]:
 
 
-log = LogisticRegression(C=1, class_weight="balanced", solver="saga")
+log = LogisticRegression(C=1, class_weight=None, solver="saga", penalty="l2")
 cv = cross_validate(log, x_train, y_train, cv=5, 
                scoring=('accuracy','f1','recall','precision'), 
                return_train_score=True)
 
 
-# In[61]:
+# In[40]:
+
+
+print_cross_val_result(cv)
+
+
+# In[41]:
+
+
+log = LogisticRegression(C=1, class_weight=None, solver="saga", penalty="l1")
+cv = cross_validate(log, x_train, y_train, cv=5, 
+               scoring=('accuracy','f1','recall','precision'), 
+               return_train_score=True)
+
+
+# In[42]:
 
 
 print_cross_val_result(cv)
