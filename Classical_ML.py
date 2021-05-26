@@ -156,7 +156,7 @@ print(f"Test Data shape: {x_test.shape} Test Class Data shape: {y_test.shape}")
 
 # ## Random Forest Classifier
 
-# In[15]:
+# In[16]:
 
 
 from sklearn.metrics import accuracy_score, confusion_matrix, recall_score, f1_score, precision_score, matthews_corrcoef
@@ -258,17 +258,17 @@ print_cross_val_result(cv)
 
 # ## Kernel Support Vector Machine
 
-# In[32]:
+# In[19]:
 
 
 from sklearn.svm import SVC
-KSVM = SVC(kernel = "rbf", C = 10)
+KSVM = SVC(kernel = "poly", C = 1)
 KSVM.fit(x_train, y_train)
 y_test_pred_KSVM = KSVM.predict(x_test)
 print_classification_result(y_test, y_test_pred_KSVM)
 
 
-# In[33]:
+# In[20]:
 
 
 plt.figure(figsize = (7,5))
@@ -307,16 +307,17 @@ cv = cross_validate(KSVM, x_train, y_train, cv=5,
 print_cross_val_result(cv)
 
 
-# In[18]:
+# In[15]:
 
 
+from sklearn.svm import SVC
 KSVM = SVC(kernel = "rbf", C = 0.1)
 cv = cross_validate(KSVM, x_train, y_train, cv=5, 
                scoring=('accuracy','f1','recall','precision'), 
                return_train_score=True)
 
 
-# In[19]:
+# In[18]:
 
 
 print_cross_val_result(cv)
@@ -583,23 +584,68 @@ print_cross_val_result(cv)
 
 # ## Logistics Regression
 
-# In[29]:
+# In[21]:
 
 
 from sklearn.linear_model import LogisticRegression
-log = LogisticRegression(C=1, class_weight=None)
+log = LogisticRegression(C=10, class_weight=None)
 log.fit(x_train, y_train)
 y_test_pred_log = log.predict(x_test)
 print_classification_result(y_test, y_test_pred_log)
 
 
-# In[30]:
+# In[22]:
 
 
 plt.figure(figsize = (7,5))
 cm = sb.heatmap(confusion_matrix(y_test, y_test_pred_log), annot=True, cmap='Blues', fmt='d')
 cm.set_title('Logistic Regression')
 plt.show()
+
+
+# In[25]:
+
+
+log = LogisticRegression(C=1, class_weight=None)
+cv = cross_validate(log, x_train, y_train, cv=5, 
+               scoring=('accuracy','f1','recall','precision'), 
+               return_train_score=True)
+
+
+# In[26]:
+
+
+print_cross_val_result(cv)
+
+
+# In[27]:
+
+
+log = LogisticRegression(C=0.1, class_weight=None)
+cv = cross_validate(log, x_train, y_train, cv=5, 
+               scoring=('accuracy','f1','recall','precision'), 
+               return_train_score=True)
+
+
+# In[28]:
+
+
+print_cross_val_result(cv)
+
+
+# In[29]:
+
+
+log = LogisticRegression(C=10, class_weight=None)
+cv = cross_validate(log, x_train, y_train, cv=5, 
+               scoring=('accuracy','f1','recall','precision'), 
+               return_train_score=True)
+
+
+# In[30]:
+
+
+print_cross_val_result(cv)
 
 
 # In[31]:
@@ -612,51 +658,6 @@ cv = cross_validate(log, x_train, y_train, cv=5,
 
 
 # In[32]:
-
-
-print_cross_val_result(cv)
-
-
-# In[33]:
-
-
-log = LogisticRegression(C=0.1, class_weight="balanced")
-cv = cross_validate(log, x_train, y_train, cv=5, 
-               scoring=('accuracy','f1','recall','precision'), 
-               return_train_score=True)
-
-
-# In[34]:
-
-
-print_cross_val_result(cv)
-
-
-# In[35]:
-
-
-log = LogisticRegression(C=10, class_weight="balanced")
-cv = cross_validate(log, x_train, y_train, cv=5, 
-               scoring=('accuracy','f1','recall','precision'), 
-               return_train_score=True)
-
-
-# In[36]:
-
-
-print_cross_val_result(cv)
-
-
-# In[37]:
-
-
-log = LogisticRegression(C=1, class_weight=None)
-cv = cross_validate(log, x_train, y_train, cv=5, 
-               scoring=('accuracy','f1','recall','precision'), 
-               return_train_score=True)
-
-
-# In[38]:
 
 
 print_cross_val_result(cv)
@@ -690,4 +691,25 @@ cv = cross_validate(log, x_train, y_train, cv=5,
 
 
 print_cross_val_result(cv)
+
+
+# In[23]:
+
+
+log = LogisticRegression(C=1, class_weight=None, solver="newton-cg", penalty="l2")
+cv = cross_validate(log, x_train, y_train, cv=5, 
+               scoring=('accuracy','f1','recall','precision'), 
+               return_train_score=True)
+
+
+# In[24]:
+
+
+print_cross_val_result(cv)
+
+
+# In[ ]:
+
+
+
 

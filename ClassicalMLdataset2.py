@@ -1243,11 +1243,10 @@ cv = cross_validate(knn, x_train, y_train, cv=5,
 print_cross_val_result(cv)
 
 
-# In[1]:
+# In[ ]:
 
 
-from sklearn.neighbors import KNeighborsClassifier
-knn = KNeighborsClassifier(n_neighbors = 5, p = 1, metric = "minkowski", algorithm = "ball_tree")
+knn = KNeighborsClassifier(n_neighbors = 5, p = 1, metric = "minkowski")
 cv = cross_validate(knn, x_train, y_train, cv=5, 
                scoring=('accuracy','f1','recall','precision'), 
                return_train_score=True)
@@ -1423,7 +1422,7 @@ print_cross_val_result(cv)
 
 
 from sklearn.linear_model import LogisticRegression
-log = LogisticRegression(C=1, class_weight=None)
+log = LogisticRegression(C=1, class_weight=None, solver="newton-cg")
 log.fit(x_train, y_train)
 y_test_pred_log = log.predict(x_test)
 print_classification_result(y_test, y_test_pred_log)
@@ -1523,6 +1522,22 @@ cv = cross_validate(log, x_train, y_train, cv=5,
 
 
 # In[37]:
+
+
+print_cross_val_result(cv)
+
+
+# In[22]:
+
+
+from sklearn.linear_model import LogisticRegression
+log = LogisticRegression(C=1, class_weight=None, solver="newton-cg", penalty="l2")
+cv = cross_validate(log, x_train, y_train, cv=5, 
+               scoring=('accuracy','f1','recall','precision'), 
+               return_train_score=True)
+
+
+# In[23]:
 
 
 print_cross_val_result(cv)
