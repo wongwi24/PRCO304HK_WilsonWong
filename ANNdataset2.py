@@ -361,6 +361,90 @@ cm.set_title('Artificial Neural Network')
 plt.show()
 
 
+# ## Parameter Testing
+
+# In[44]:
+
+
+ann = tf.keras.models.Sequential()
+ann.add(tf.keras.layers.Dense(units = x_train.shape[1] + 1, activation = "relu"))
+ann.add(tf.keras.layers.Dense(units = (x_train.shape[1]/2) + 20, activation = "relu"))
+ann.add(tf.keras.layers.Dense(units = 1, activation = "sigmoid"))
+ann.compile(optimizer = 'adam', loss = 'binary_crossentropy', metrics = ['accuracy'])
+
+
+# In[45]:
+
+
+loss = ann.fit(x_train, y_train, batch_size = 32, epochs = 11, validation_split = 0.3)
+
+
+# In[46]:
+
+
+plt.plot(loss.history['loss'])
+plt.plot(loss.history['val_loss'])
+plt.title('model loss')
+plt.ylabel('loss')
+plt.xlabel('epoch')
+plt.legend(['train', 'valid'], loc='upper left')
+plt.show()
+
+
+# In[47]:
+
+
+y_pred = ann.predict(x_test)
+y_pred = np.round(y_pred)
+
+
+# In[48]:
+
+
+print_classification_result(y_test, y_pred)
+
+
+# In[38]:
+
+
+ann = tf.keras.models.Sequential()
+ann.add(tf.keras.layers.Dense(units = x_train.shape[1] + 1, activation = "relu"))
+ann.add(tf.keras.layers.Dense(units = (x_train.shape[1]/2) - 20, activation = "relu"))
+ann.add(tf.keras.layers.Dense(units = 1, activation = "sigmoid"))
+ann.compile(optimizer = 'adam', loss = 'binary_crossentropy', metrics = ['accuracy'])
+
+
+# In[39]:
+
+
+loss = ann.fit(x_train, y_train, batch_size = 32, epochs = 11, validation_split = 0.3)
+
+
+# In[40]:
+
+
+plt.plot(loss.history['loss'])
+plt.plot(loss.history['val_loss'])
+plt.title('model loss')
+plt.ylabel('loss')
+plt.xlabel('epoch')
+plt.legend(['train', 'valid'], loc='upper left')
+plt.show()
+
+
+# In[41]:
+
+
+y_pred = ann.predict(x_test)
+y_pred = np.round(y_pred)
+
+
+# In[42]:
+
+
+print_classification_result(y_test, y_pred)
+
+
 # In[ ]:
 
 

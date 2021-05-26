@@ -85,7 +85,7 @@ ann.compile(optimizer = 'adam', loss = 'binary_crossentropy', metrics = ['accura
 loss = ann.fit(x_train, y_train, batch_size = 32, epochs = 11, validation_split = 0.3)
 
 
-# In[11]:
+# In[7]:
 
 
 from sklearn.metrics import accuracy_score, confusion_matrix, recall_score, f1_score, precision_score, matthews_corrcoef
@@ -120,6 +120,90 @@ y_pred = np.round(y_pred)
 
 
 # In[14]:
+
+
+print_classification_result(y_test, y_pred)
+
+
+# ## Parameter testing
+
+# In[8]:
+
+
+ann = tf.keras.models.Sequential()
+ann.add(tf.keras.layers.Dense(units = 31, activation = "relu"))
+ann.add(tf.keras.layers.Dense(units = 20, activation = "relu"))
+ann.add(tf.keras.layers.Dense(units = 1, activation = "sigmoid"))
+ann.compile(optimizer = 'adam', loss = 'binary_crossentropy', metrics = ['accuracy'])
+
+
+# In[9]:
+
+
+loss = ann.fit(x_train, y_train, batch_size = 32, epochs = 11, validation_split = 0.3)
+
+
+# In[10]:
+
+
+plt.plot(loss.history['loss'])
+plt.plot(loss.history['val_loss'])
+plt.title('model loss')
+plt.ylabel('loss')
+plt.xlabel('epoch')
+plt.legend(['train', 'valid'], loc='upper left')
+plt.show()
+
+
+# In[11]:
+
+
+y_pred = ann.predict(x_test)
+y_pred = np.round(y_pred)
+
+
+# In[12]:
+
+
+print_classification_result(y_test, y_pred)
+
+
+# In[13]:
+
+
+ann = tf.keras.models.Sequential()
+ann.add(tf.keras.layers.Dense(units = 31, activation = "relu"))
+ann.add(tf.keras.layers.Dense(units = 10, activation = "relu"))
+ann.add(tf.keras.layers.Dense(units = 1, activation = "sigmoid"))
+ann.compile(optimizer = 'adam', loss = 'binary_crossentropy', metrics = ['accuracy'])
+
+
+# In[14]:
+
+
+loss = ann.fit(x_train, y_train, batch_size = 32, epochs = 11, validation_split = 0.3)
+
+
+# In[15]:
+
+
+plt.plot(loss.history['loss'])
+plt.plot(loss.history['val_loss'])
+plt.title('model loss')
+plt.ylabel('loss')
+plt.xlabel('epoch')
+plt.legend(['train', 'valid'], loc='upper left')
+plt.show()
+
+
+# In[17]:
+
+
+y_pred = ann.predict(x_test)
+y_pred = np.round(y_pred)
+
+
+# In[18]:
 
 
 print_classification_result(y_test, y_pred)
