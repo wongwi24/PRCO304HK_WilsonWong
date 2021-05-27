@@ -12,6 +12,7 @@ import matplotlib.pyplot as plt
 import seaborn as sb
 from sklearn.compose import ColumnTransformer
 from imblearn.over_sampling import SMOTE
+import tensorflow as tf
 
 
 # ## Import and Analysis of data
@@ -149,7 +150,7 @@ print(f"Test Data shape: {x_test.shape} Test Class Data shape: {y_test.shape}")
 
 # ## Random Forest Classifier
 
-# In[15]:
+# In[16]:
 
 
 from sklearn.metrics import accuracy_score, confusion_matrix, recall_score, f1_score, precision_score, matthews_corrcoef
@@ -185,17 +186,17 @@ plt.show()
 
 # ## Kernel Support Vector Machine
 
-# In[18]:
+# In[21]:
 
 
 from sklearn.svm import SVC
-KSVM = SVC(kernel = "rbf", C = 10)
+KSVM = SVC(kernel = "poly", C = 1)
 KSVM.fit(x_train, y_train)
 y_test_pred_KSVM = KSVM.predict(x_test)
 print_classification_result(y_test, y_test_pred_KSVM)
 
 
-# In[19]:
+# In[22]:
 
 
 plt.figure(figsize = (7,5))
@@ -293,7 +294,6 @@ plt.show()
 # In[24]:
 
 
-import tensorflow as tf
 ann = tf.keras.models.Sequential()
 ann.add(tf.keras.layers.Dense(units = 31, activation = "relu"))
 ann.add(tf.keras.layers.Dense(units = 15, activation = "relu"))
@@ -339,20 +339,20 @@ plt.show()
 
 # ## Convolutional Neural Network
 
-# In[27]:
+# In[19]:
 
 
 x_train = np.array(x_train).reshape(x_train.shape[0], x_train.shape[1], 1)
 x_test = np.array(x_test).reshape(x_test.shape[0], x_test.shape[1], 1)
 
 
-# In[28]:
+# In[20]:
 
 
 cnn = tf.keras.models.Sequential()
-cnn.add(tf.keras.layers.Conv1D(filters = 64, kernel_size = 3, activation = 'relu', input_shape = [x_train.shape[1], 1]))
+cnn.add(tf.keras.layers.Conv1D(filters = 128, kernel_size = 3, activation = 'relu', input_shape = [x_train.shape[1], 1]))
 cnn.add(tf.keras.layers.MaxPool1D(pool_size = 2, strides = 1))
-cnn.add(tf.keras.layers.Conv1D(filters = 64, kernel_size = 2, activation = 'relu'))
+cnn.add(tf.keras.layers.Conv1D(filters = 128, kernel_size = 2, activation = 'relu'))
 cnn.add(tf.keras.layers.MaxPool1D(pool_size = 2, strides = 1))
 cnn.add(tf.keras.layers.Flatten())
 cnn.add(tf.keras.layers.Dense(units = 128, activation = 'relu'))
@@ -360,13 +360,13 @@ cnn.add(tf.keras.layers.Dense(units = 1, activation = 'sigmoid'))
 cnn.compile(optimizer = 'adam', loss = 'binary_crossentropy', metrics = ['accuracy'])
 
 
-# In[29]:
+# In[21]:
 
 
 loss = cnn.fit(x_train, y_train, batch_size = 32, epochs = 20, verbose = 1, validation_split = 0.3)
 
 
-# In[30]:
+# In[22]:
 
 
 plt.plot(loss.history['loss'])
@@ -378,7 +378,7 @@ plt.legend(['train', 'test'], loc='upper left')
 plt.show()
 
 
-# In[31]:
+# In[23]:
 
 
 y_pred = cnn.predict(x_test)
@@ -386,7 +386,7 @@ y_pred = np.round(y_pred)
 print_classification_result(y_test, y_pred)
 
 
-# In[32]:
+# In[24]:
 
 
 from sklearn.metrics import plot_confusion_matrix
